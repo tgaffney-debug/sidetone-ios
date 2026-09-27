@@ -1,0 +1,74 @@
+name: Sidetone iPhone and iPad build
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: sidetone-ios-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  test:
+    runs-on: macos-15
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        family: [iphone, ipad]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Load verified Sidetone source commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git bundle verify ./sidetone-candidate.bundle
+          git fetch ./sidetone-candidate.bundle HEAD
+          test "$(git rev-parse FETCH_HEAD)" = "c7b628b2b0be18ca8a628b6036ccb0bc65840369"
+          git checkout --detach FETCH_HEAD
+          test -z "$(git status --porcelain)"
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Run native tests
+        run: bash tools/build-sidetone.sh test-${{ matrix.family }}
+      - name: Preserve test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Sidetone-${{ matrix.family }}-test-results
+          path: |
+            build/evidence
+            build/*.xcresult
+          if-no-files-found: ignore
+  archive:
+    needs: test
+    runs-on: macos-15
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Load verified Sidetone source commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git bundle verify ./sidetone-candidate.bundle
+          git fetch ./sidetone-candidate.bundle HEAD
+          test "$(git rev-parse FETCH_HEAD)" = "c7b628b2b0be18ca8a628b6036ccb0bc65840369"
+          git checkout --detach FETCH_HEAD
+          test -z "$(git status --porcelain)"
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Build unsigned IPA
+        env:
+          SIDETONE_BUILD_NUMBER: ${{ github.run_number }}
+        run: bash tools/build-sidetone.sh archive
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Sidetone-iPhone-iPad-unsigned
+          path: |
+            build/Sidetone-*-unsigned.ipa
+            build/*.sha256
+            build/INSTALL-NOTE.txt
+            build/evidence
+          if-no-files-found: error

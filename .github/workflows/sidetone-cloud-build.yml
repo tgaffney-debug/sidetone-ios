@@ -24,7 +24,9 @@ jobs:
           set -euo pipefail
           git bundle verify ./sidetone-candidate.bundle
           git fetch ./sidetone-candidate.bundle HEAD
-          test "$(git rev-parse FETCH_HEAD)" = "c7b628b2b0be18ca8a628b6036ccb0bc65840369"
+          expected_source="$(cat sidetone-source.txt)"
+          [[ "$expected_source" =~ ^[a-f0-9]{40}$ ]]
+          test "$(git rev-parse FETCH_HEAD)" = "$expected_source"
           git checkout --detach FETCH_HEAD
           test -z "$(git status --porcelain)"
       - name: Install XcodeGen
@@ -54,7 +56,9 @@ jobs:
           set -euo pipefail
           git bundle verify ./sidetone-candidate.bundle
           git fetch ./sidetone-candidate.bundle HEAD
-          test "$(git rev-parse FETCH_HEAD)" = "c7b628b2b0be18ca8a628b6036ccb0bc65840369"
+          expected_source="$(cat sidetone-source.txt)"
+          [[ "$expected_source" =~ ^[a-f0-9]{40}$ ]]
+          test "$(git rev-parse FETCH_HEAD)" = "$expected_source"
           git checkout --detach FETCH_HEAD
           test -z "$(git status --porcelain)"
       - name: Install XcodeGen

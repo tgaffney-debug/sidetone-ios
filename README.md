@@ -1,15 +1,9 @@
-# Sidetone development build
+# Sidetone 0.2 improvement candidate
 
-Native iPhone radio panel and hold-to-talk control for vPilot on Windows. This is a development candidate, not yet accepted on physical devices.
+Native iPhone radio panel and hold-to-talk for vPilot on your Windows Ally.
 
-This branch is a **cloud-build launcher**. The reviewed Sidetone implementation is stored in `sidetone-candidate.bundle`, a standard Git bundle containing source commit `c7b628b2b0be18ca8a628b6036ccb0bc65840369` and its delta from upstream `b40b22503113b71b5a2fc21a5fbe68ff728c5c14`. The surrounding source tree is the upstream baseline, not the Sidetone application.
+This branch is a cloud-build launcher. The application source is stored in the standard Git bundle `sidetone-candidate.bundle`, source commit `4b85951063d96a80348a0ae6255478006d4a7f9f`. The surrounding tree is the upstream baseline. The manual Sidetone workflow verifies the bundle and checks out the exact source declared in `sidetone-source.txt` before compiling, testing and archiving.
 
-The manual **Sidetone** workflow verifies the bundle and checks out that exact candidate before compiling or testing. It has read-only repository permission and does not publish a release. Build manifests identify the candidate source commit, which differs from the workflow launcher commit.
+Bundle SHA-256: `4ed80a4f25dc2cddc363ade6ebcbcd428a7b8563d7df54c2431871ff342ce34e`.
 
-To inspect the candidate locally, fetch the bundle into this clone and check out FETCH_HEAD. The candidate includes setup instructions, protocol documentation, safety tests and build scripts.
-
-Bundle SHA-256: `16fe7cf8f121fb40c1181f735f8678c7ad8de3f24d96c7bee0c995dc11edb8a0`
-
-GitHub browser is signed in as tgaffney-debug; the connector is linked to another account. This source-bundle launcher enables platform builds without creating credentials or changing account access.
-
-Microphone and headset remain on the Windows PC. iPhone installation still needs Apple signing. No installer or IPA should be treated as flight-ready until device acceptance.
+Improvements include guided connection setup, endpoint validation, adaptive cockpit, frequency favorites/recent requests, deliberate squawk entry, stale-state guards, bounded reconnection and actual simulator UI smoke tests. Demo cannot send live commands. Microphone/headset stay on the Ally. Device acceptance remains separate from native build/test success. Apple signing is required to install the unsigned IPA.

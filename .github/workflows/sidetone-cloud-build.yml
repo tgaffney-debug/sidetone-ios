@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        family: [iphone, ipad]
+        family: [iphone, ipad, iphone-modern]
     steps:
       - uses: actions/checkout@v4
         with:
